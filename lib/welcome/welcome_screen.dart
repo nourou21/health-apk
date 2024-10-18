@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/auth/sign_in_screen.dart';
+import 'package:flutter_application_1/auth/components/sign_in_form.dart';
 import 'package:flutter_application_1/auth/sign_up_screen.dart';
 import 'package:flutter_application_1/constants.dart';
 import 'package:flutter_svg/svg.dart';

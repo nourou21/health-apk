@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "776095399103",
+    "project_id": "projet-algo-ba084",
+    "storage_bucket": "projet-algo-ba084.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776095399103:android:ee51d2322177968db39a0a",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1Dks0GFrxJeUd0WEb8wlDxqbv8Mwk0XQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

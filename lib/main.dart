@@ -1,9 +1,24 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants.dart';
 import 'package:flutter_application_1/welcome/welcome_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await _initFirebase();
+
   runApp(MyApp());
+}
+
+Future<void> _initFirebase() async {
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+        apiKey: 'AIzaSyD1Dks0GFrxJeUd0WEb8wlDxqbv8Mwk0XQ',
+        appId: '1:776095399103:android:ee51d2322177968db39a0a',
+        messagingSenderId: '776095399103',
+        projectId: 'projet-algo-ba084 '),
+  );
 }
 
 class MyApp extends StatelessWidget {
