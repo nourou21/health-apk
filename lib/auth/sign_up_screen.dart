@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/auth/components/sign_in_form.dart';
 import 'package:flutter_application_1/constants.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
+  @override
+  _SignUpScreenState createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  late String _userName, _email, _password;
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +23,7 @@ class SignUpScreen extends StatelessWidget {
           SvgPicture.asset(
             "assets/icons/Sign_Up_bg.svg",
             height: MediaQuery.of(context).size.height,
+            fit: BoxFit.cover,
           ),
           Center(
             child: SafeArea(
@@ -27,7 +33,7 @@ class SignUpScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Create Account",
+                      "Sign Up",
                       style: Theme.of(context)
                           .textTheme
                           .headlineSmall!
@@ -37,12 +43,7 @@ class SignUpScreen extends StatelessWidget {
                       children: [
                         Text("Already have an account?"),
                         TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SignInScreen(),
-                            ),
-                          ),
+                          onPressed: () => Navigator.pop(context),
                           child: Text(
                             "Sign In!",
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -51,25 +52,13 @@ class SignUpScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: defaultPadding * 2),
-                    SignUpForm(formKey: _formKey),
+                    _buildSignUpForm(),
                     const SizedBox(height: defaultPadding * 2),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            // Call your sign-up method here and handle success or error
-                            String message = await SignUpForm(formKey: _formKey)
-                                .signUp(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(message),
-                              ),
-                            );
-                          }
-                        },
-                        child: Text("Sign Up"),
+                        onPressed: _signUp,
+                        child: Text("Register"),
                       ),
                     ),
                   ],
@@ -81,95 +70,72 @@ class SignUpScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-class SignUpForm extends StatelessWidget {
-  SignUpForm({
-    Key? key,
-    required this.formKey,
-  }) : super(key: key);
-
-  final GlobalKey<FormState> formKey;
-
-  late String _userName, _email, _password;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSignUpForm() {
     return Form(
-      key: formKey,
+      key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextFieldName(text: "Username"),
+          TextFieldLabel(text: "Username"),
           TextFormField(
-            decoration: InputDecoration(hintText: "theflutterway"),
+            decoration: InputDecoration(hintText: "Enter username"),
             validator: RequiredValidator(errorText: "Username is required"),
             onSaved: (username) => _userName = username!,
           ),
           const SizedBox(height: defaultPadding),
-          TextFieldName(text: "Email"),
+          TextFieldLabel(text: "Email"),
           TextFormField(
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(hintText: "test@email.com"),
-            validator: EmailValidator(errorText: "Use a valid email!"),
+            decoration: InputDecoration(hintText: "Enter email"),
+            validator: EmailValidator(errorText: "Please enter a valid email"),
             onSaved: (email) => _email = email!,
           ),
           const SizedBox(height: defaultPadding),
-          TextFieldName(text: "Password"),
+          TextFieldLabel(text: "Password"),
           TextFormField(
             obscureText: true,
-            decoration: InputDecoration(hintText: "******"),
-            validator: passwordValidator,
+            decoration: InputDecoration(hintText: "Enter password"),
+            validator: MinLengthValidator(6,
+                errorText: "Minimum 6 characters required"),
             onSaved: (password) => _password = password!,
-          ),
-          const SizedBox(height: defaultPadding),
-          TextFieldName(text: "Confirm Password"),
-          TextFormField(
-            obscureText: true,
-            decoration: InputDecoration(hintText: "*****"),
-            validator: (pass) =>
-                MatchValidator(errorText: "Passwords do not match")
-                    .validateMatch(pass!, _password),
           ),
         ],
       ),
     );
   }
 
-  // Handle sign-up logic with Firebase
-  Future<String> signUp(BuildContext context) async {
-    // Notify user that registration is in progress
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Registering... Please wait.'),
-        duration: Duration(seconds: 2), // Show for 2 seconds
-      ),
-    );
+  Future<void> _signUp() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
 
-    try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _email,
-        password: _password,
-      );
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: _email, password: _password);
 
-      // Send email verification
-      await userCredential.user!.sendEmailVerification();
+        await userCredential.user!.sendEmailVerification();
+        await userCredential.user!.updateDisplayName(_userName);
 
-      // Optionally, save the username in Firestore if needed
-      await userCredential.user!.updateDisplayName(_userName);
-
-      // Notify user of successful registration
-      return 'Registration successful! A verification email has been sent.';
-    } on FirebaseAuthException catch (e) {
-      // Handle errors (e.g., display error messages)
-      return 'Registration failed: ${e.message}';
+        // Show success SnackBar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sign-up successful! Please verify your email.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      } on FirebaseAuthException catch (e) {
+        // Display error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign-up failed: ${e.message}')),
+        );
+      }
     }
   }
 }
 
-class TextFieldName extends StatelessWidget {
-  const TextFieldName({
+class TextFieldLabel extends StatelessWidget {
+  const TextFieldLabel({
     Key? key,
     required this.text,
   }) : super(key: key);
