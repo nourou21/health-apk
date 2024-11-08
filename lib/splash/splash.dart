@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_application_1/SLIDERS/firstslide.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart'; // Import for SystemChrome
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -16,10 +17,14 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    // Hides the system status bar and navigation bar
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),
     )..repeat(); // Repeats the animation continuously
+
     _navigateHome();
   }
 
@@ -36,6 +41,9 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    // Restore the system UI when leaving the screen
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
     _controller.dispose();
     super.dispose();
   }
@@ -68,7 +76,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
             ),
             SizedBox(height: 20),
 
-            // "QcodeR" Text with right-to-left animation
+            // "DoCtor Chat" Text with right-to-left animation
             Text(
               "DoCtor Chat",
               style: GoogleFonts.inter(

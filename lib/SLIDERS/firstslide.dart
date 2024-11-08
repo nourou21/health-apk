@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_application_1/SLIDERS/secondslide.dart';
+import 'package:flutter/services.dart'; // Import for SystemChrome
 
 class fisrtsld extends StatefulWidget {
   const fisrtsld({super.key});
@@ -10,6 +11,22 @@ class fisrtsld extends StatefulWidget {
 }
 
 class _fisrtsldState extends State<fisrtsld> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Hides the system status bar and navigation bar
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  }
+
+  @override
+  void dispose() {
+    // Show the system UI elements when leaving the screen
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get the full screen height and width
