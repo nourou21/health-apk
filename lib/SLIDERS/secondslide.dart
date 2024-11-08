@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_application_1/welcome/welcome_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_application_1/SLIDERS/thirdslide.dart';
+
+import 'package:flutter/services.dart'; // Import for SystemChrome
 
 class secondslid extends StatefulWidget {
   const secondslid({super.key});
@@ -11,6 +12,21 @@ class secondslid extends StatefulWidget {
 }
 
 class _secondslidState extends State<secondslid> {
+  @override
+  void initState() {
+    super.initState();
+    // Hide system status bar and navigation bar
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  }
+
+  @override
+  void dispose() {
+    // Restore system UI when leaving the screen
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get the full screen height and width
@@ -73,7 +89,7 @@ class _secondslidState extends State<secondslid> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const WelcomeScreen(),
+                      builder: (context) => const thirdslide(),
                     ),
                   );
                 },
