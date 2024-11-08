@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/auth/forgetpass.dart';
-
-import 'package:flutter_application_1/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_application_1/welcome/welcome_screen.dart';
+import 'package:flutter_application_1/constants.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class SignInScreen extends StatefulWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   @override
-  _SignInScreenState createState() => _SignInScreenState();
+  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
-  String _password = '';
   bool _isLoading = false;
 
   @override
@@ -24,6 +21,11 @@ class _SignInScreenState extends State<SignInScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          SvgPicture.asset(
+            "assets/icons/Sign_Up_bg.svg", // Use the same background as Sign In
+            height: MediaQuery.of(context).size.height,
+            fit: BoxFit.cover,
+          ),
           Padding(
             padding:
                 EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
@@ -34,47 +36,28 @@ class _SignInScreenState extends State<SignInScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Sign In",
+                      "Forgot Password",
                       style: Theme.of(context)
                           .textTheme
                           .headlineSmall!
                           .copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: defaultPadding * 2),
-                    _buildSignInForm(),
+                    _buildForgotPasswordForm(),
                     const SizedBox(height: defaultPadding * 2),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _signIn,
+                        onPressed: _isLoading ? null : _sendResetEmail,
                         child: _isLoading
                             ? CircularProgressIndicator(
                                 valueColor:
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               )
-                            : Text("Sign In"),
+                            : Text("Send Reset Link"),
                       ),
                     ),
                     const SizedBox(height: defaultPadding),
-                    // "Forgot Password?" Button
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          // Navigate to the ForgotPasswordScreen when pressed
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ForgotPasswordScreen(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          "Forgot Password?",
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -85,7 +68,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildSignInForm() {
+  Widget _buildForgotPasswordForm() {
     return Form(
       key: _formKey,
       child: Column(
@@ -98,25 +81,12 @@ class _SignInScreenState extends State<SignInScreen> {
             validator: EmailValidator(errorText: "Use a valid email!"),
             onChanged: (value) => _email = value,
           ),
-          const SizedBox(height: defaultPadding),
-          TextFieldName(text: "Password"),
-          TextFormField(
-            obscureText: true,
-            decoration: InputDecoration(hintText: "******"),
-            validator: (password) {
-              if (password == null || password.isEmpty) {
-                return 'Password cannot be empty!';
-              }
-              return null;
-            },
-            onChanged: (value) => _password = value,
-          ),
         ],
       ),
     );
   }
 
-  Future<void> _signIn() async {
+  Future<void> _sendResetEmail() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -124,48 +94,19 @@ class _SignInScreenState extends State<SignInScreen> {
       _isLoading = true;
     });
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _email.trim(),
-        password: _password.trim(),
-      );
-
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: _email.trim());
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                'Sign-in successful! Welcome ${userCredential.user?.email}.')),
+        SnackBar(content: Text('Password reset email sent to $_email')),
       );
-
-      // Navigate to the HomeScreen after a successful sign-in
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              WelcomeScreen(), // Ensure WelcomeScreen is imported
-        ),
-      );
+      Navigator.pop(context); // Go back to the Sign In screen
     } on FirebaseAuthException catch (e) {
-      String errorMessage = _getFirebaseAuthErrorMessage(e);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign-in failed: $errorMessage')),
+        SnackBar(content: Text('Error: ${e.message}')),
       );
     } finally {
       setState(() {
         _isLoading = false;
       });
-    }
-  }
-
-  String _getFirebaseAuthErrorMessage(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'user-not-found':
-        return 'No user found for that email.';
-      case 'wrong-password':
-        return 'Wrong password provided for that user.';
-      case 'invalid-email':
-        return 'The email address is not valid.';
-      default:
-        return 'An unknown error occurred.';
     }
   }
 }
