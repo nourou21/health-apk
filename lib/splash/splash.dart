@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_application_1/welcome/welcome_screen.dart';
+import 'package:flutter_application_1/SLIDERS/firstslide.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Splash extends StatefulWidget {
@@ -29,7 +29,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => WelcomeScreen(),
+        builder: (context) => fisrtsld(),
       ),
     );
   }
