@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/auth/forgetpass.dart';
+import 'package:flutter_application_1/body%20of%20the%20app/WELCOME_PAGE.dart';
 
 import 'package:flutter_application_1/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -141,7 +142,7 @@ class _SignInScreenState extends State<SignInScreen> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              WelcomeScreen(), // Ensure WelcomeScreen is imported
+              MedicalFieldsScreen(), // Ensure WelcomeScreen is imported
         ),
       );
     } on FirebaseAuthException catch (e) {
