@@ -15,19 +15,18 @@ class MedicalFieldsScreen extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.teal[400]!, Colors.teal[800]!],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        body: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.teal[400]!, Colors.teal[800]!],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
-          ),
-          child: Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: 40),
@@ -82,12 +81,12 @@ class MedicalFieldsScreen extends StatelessWidget {
                   FieldButtonRow(
                     buttons: [
                       FieldButton(
-                        label: 'DAVID',
-                        subtitle: 'Diabetic Doctor\nKamelia',
+                        label: 'Diabetic Doctor',
+                        subtitle: 'DAVID',
                       ),
                       FieldButton(
-                        label: 'JESICA',
-                        subtitle: 'Psychologist\nBOB',
+                        label: 'Psychologist',
+                        subtitle: 'BOB',
                       ),
                     ],
                   ),
@@ -96,11 +95,11 @@ class MedicalFieldsScreen extends StatelessWidget {
                     buttons: [
                       FieldButton(
                         label: 'Pediatrician',
-                        subtitle: '',
+                        subtitle: 'ness',
                       ),
                       FieldButton(
                         label: 'General Practitioner',
-                        subtitle: '',
+                        subtitle: 'nourou',
                       ),
                     ],
                   ),
@@ -123,24 +122,55 @@ class MedicalFieldsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  TextButton(
-                    onPressed: () {
-                      // Handle "About Us" action
-                    },
-                    child: const Text(
-                      'ABOUT US',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
         ),
+        floatingActionButton: Stack(
+          children: [
+            // Settings button
+
+            Positioned(
+              left: 8,
+              top: 8,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    // Navigate to Settings Screen
+                  },
+                  backgroundColor: Colors.teal[300],
+                  child: const Icon(
+                    Icons.settings,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            // About Us button
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    // Handle "About Us" action
+                  },
+                  backgroundColor: Colors.teal[300],
+                  child: const Icon(
+                    Icons.add,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }
@@ -156,8 +186,9 @@ class FieldButtonRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Wrap(
+      spacing: 20,
+      runSpacing: 20,
       children: buttons,
     );
   }
@@ -177,9 +208,18 @@ class FieldButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
         Container(
           width: 120,
-          height: 80,
+          height: 100,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: Colors.teal),
@@ -194,22 +234,15 @@ class FieldButton extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              label,
+              subtitle,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
                 color: Colors.teal[800],
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ),
-        if (subtitle.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white70),
-          ),
-        ],
       ],
     );
   }
